@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,20 +6,23 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Button,
 } from 'react-native';
-import {Button, Text} from 'react-native-paper';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import {Text} from 'react-native-paper';
 
 const HomeScreen: React.FC = () => {
-  const [filterDate, setFilterDate] = useState<Date | null>(new Date());
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<string>('JAN');
+  const [sectionPage, setSection] = useState<'Nota' | 'Rekap'>('Nota');
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const scrollRef = useRef<ScrollView>(null);
 
-  const dummyData = Array(5).fill({
-    id: 'INV123',
-    date: '2024/06/04',
-    omset: 1000000,
-    laba: 200000,
-  });
+  const dummyData = [
+    {id: 'INV123', date: '2024-01-04', omset: 1000000, laba: 200000},
+    {id: 'INV124', date: '2024-02-15', omset: 2000000, laba: 400000},
+    {id: 'INV125', date: '2024-01-25', omset: 1500000, laba: 300000},
+    {id: 'INV126', date: '2024-03-08', omset: 1200000, laba: 250000},
+    {id: 'INV127', date: '2024-01-12', omset: 1700000, laba: 350000},
+  ];
 
   const months = [
     'JAN',
@@ -36,9 +39,19 @@ const HomeScreen: React.FC = () => {
     'DEC',
   ];
 
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setDatePickerVisible(false);
-    if (selectedDate) setFilterDate(selectedDate);
+  const filteredData = dummyData.filter(item => {
+    const itemMonthIndex = new Date(item.date).getUTCMonth(); // Index bulan (0-11)
+    const selectedMonthIndex = months.indexOf(selectedMonth); // Index bulan yang dipilih
+    return itemMonthIndex === selectedMonthIndex;
+  });
+
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollRef.current) {
+      const offset =
+        direction === 'right' ? scrollPosition + 100 : scrollPosition - 100;
+      scrollRef.current.scrollTo({x: offset, animated: true});
+      setScrollPosition(offset); // Update posisi scroll
+    }
   };
 
   const renderTableRow = ({item}: any) => (
@@ -50,25 +63,30 @@ const HomeScreen: React.FC = () => {
     </View>
   );
 
+  const totalOmset = filteredData.reduce(
+    (total, item) => total + item.omset,
+    0,
+  );
+  const totalLaba = filteredData.reduce((total, item) => total + item.laba, 0);
+
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>HOME KASBOOK APP</Text>
       <View style={styles.navbar}>
-        <Button mode="contained" style={styles.navButton}>
-          KasBook
-        </Button>
-        <Button mode="contained" style={styles.navButton}>
-          PPOB
-        </Button>
-        <Button mode="contained" style={styles.navButton}>
-          Market
-        </Button>
-        <Button mode="contained" style={styles.navButton}>
-          Settings
-        </Button>
+        <TouchableOpacity style={styles.navButton}>
+          <Text style={{color: '#FFFF', fontWeight: '800'}}>KasBook</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Text style={{color: '#FFFF', fontWeight: '800'}}>PPOB</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Text style={{color: '#FFFF', fontWeight: '800'}}>Market</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navButton}>
+          <Text style={{color: '#FFFF', fontWeight: '800'}}>Settings</Text>
+        </TouchableOpacity>
       </View>
       <View style={[styles.container, styles.subContainer]}>
-        {/* Month Selector */}
         <View
           style={{
             flexDirection: 'row',
@@ -77,60 +95,88 @@ const HomeScreen: React.FC = () => {
             maxWidth: 200,
             margin: 'auto',
           }}>
-          <Button mode="contained" style={styles.navButton}>
-            Nota
-          </Button>
-          <Button mode="contained" style={styles.navButton}>
-            Rekap
-          </Button>
+          <TouchableOpacity
+            onPress={() => {
+              setSection('Nota');
+            }}
+            style={{
+              padding: 10,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              backgroundColor: sectionPage === 'Nota' ? '#A94D4D' : 'white',
+            }}>
+            <Text
+              style={{
+                color: sectionPage === 'Nota' ? 'white' : '#A94D4D',
+                textAlign: 'center',
+                fontWeight: '900',
+              }}>
+              Nota
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setSection('Rekap');
+            }}
+            style={{
+              padding: 10,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              backgroundColor: sectionPage === 'Rekap' ? '#A94D4D' : 'white',
+            }}>
+            <Text
+              style={{
+                color: sectionPage === 'Rekap' ? 'white' : '#A94D4D',
+                textAlign: 'center',
+                fontWeight: '900',
+              }}>
+              Rekap
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.monthSelector}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleScroll('left')}>
             <Image
               source={require('../../../assets/arrow-right.png')}
               style={styles.arrowIcon}
             />
           </TouchableOpacity>
-          <ScrollView horizontal contentContainerStyle={styles.monthScroll}>
-            {months.map((month, index) => (
-              <Button textColor='#681313'  mode="contained" key={index} style={styles.monthButton}>
-                {month}
-              </Button>
-            ))}
+          <ScrollView
+            ref={scrollRef}
+            horizontal
+            contentContainerStyle={styles.monthScroll}>
+            {months.map((month, index) => {
+              console.log(month === selectedMonth);
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedMonth(month);
+                  }}
+                  style={[
+                    styles.monthButton,
+                    {
+                      backgroundColor:
+                        selectedMonth === month ? '#CD4F4F' : 'transparent',
+                    },
+                  ]}>
+                  <Text
+                    style={{
+                      color: selectedMonth === month ? 'white' : '#681313',
+                      fontWeight: '700',
+                    }}>
+                    {month}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleScroll('right')}>
             <Image
               source={require('../../../assets/arrow-left.png')}
               style={styles.arrowIcon}
             />
           </TouchableOpacity>
         </View>
-
-        {/* Date Picker */}
-        <TouchableOpacity
-          onPress={() => setDatePickerVisible(true)}
-          style={styles.dateButton}>
-          <View style={styles.dateButtonContent}>
-            <Image
-              source={require('../../../assets/calendar.png')}
-              style={styles.icon}
-            />
-            <Text>
-              {filterDate
-                ? filterDate.toISOString().split('T')[0]
-                : 'Pilih Tanggal'}
-            </Text>
-          </View>
-        </TouchableOpacity>
-
-        {isDatePickerVisible && (
-          <DateTimePicker
-            value={filterDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
-        )}
 
         {/* Table */}
         <View style={styles.tableHeader}>
@@ -140,19 +186,11 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.cellHeader}>Laba</Text>
         </View>
         <FlatList
-          data={dummyData}
+          data={filteredData}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderTableRow}
           contentContainerStyle={styles.tableBody}
         />
-
-        {/* Floating Button */}
-        <TouchableOpacity style={styles.fab}>
-          <Image
-            source={require('../../../assets/plus-icon.png')}
-            style={styles.fabIcon}
-          />
-        </TouchableOpacity>
         <View style={styles.footer}>
           <View
             style={[
@@ -164,7 +202,7 @@ const HomeScreen: React.FC = () => {
               },
             ]}>
             <Text style={[styles.summaryText, {color: '#B98960'}]}>
-              Omset Rp12,309,203
+              Omset Rp{totalOmset.toLocaleString('id-ID')}
             </Text>
           </View>
           <View
@@ -177,7 +215,7 @@ const HomeScreen: React.FC = () => {
               },
             ]}>
             <Text style={[styles.summaryText, {color: '#58B647'}]}>
-              Omset Rp12,309,203
+              Laba Rp{totalLaba.toLocaleString('id-ID')}
             </Text>
           </View>
         </View>
@@ -212,11 +250,15 @@ const styles = StyleSheet.create({
   navbar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    margin: 'auto',
   },
   navButton: {
-    marginHorizontal: 4,
+    marginHorizontal: 10,
     backgroundColor: '#A94D4D',
-    color: '#FFFF',
+    color: '#FFFFF',
+    padding: 8,
+    paddingHorizontal: 15,
+    borderRadius: 10,
   },
   monthSelector: {
     flexDirection: 'row',
@@ -226,13 +268,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   monthScroll: {
+    paddingVertical: 10,
     flexDirection: 'row',
     backgroundColor: '#F8BBD0',
   },
   monthButton: {
     marginHorizontal: 4,
     backgroundColor: 'transparent',
-
+    padding: 10,
+    borderRadius: 5,
   },
   arrowIcon: {
     width: 24,
@@ -241,15 +285,15 @@ const styles = StyleSheet.create({
   dateButton: {
     marginHorizontal: 16,
     marginVertical: 8,
-    backgroundColor:'#FFEAEA',
+    backgroundColor: '#FFEAEA',
     maxWidth: 150,
     padding: 5,
     borderRadius: 5,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   dateButtonContent: {
     textAlign: 'center',
-    margin:'auto',
+    margin: 'auto',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -317,6 +361,7 @@ const styles = StyleSheet.create({
   summaryText: {
     fontWeight: 'bold',
     fontSize: 16,
+    textAlign: 'center',
   },
 });
 
