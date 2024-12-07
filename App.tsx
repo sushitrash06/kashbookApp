@@ -3,6 +3,7 @@ import {View, Text, Image} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import HomeScreen from './Component/pages/Home';
+import MainScreen from './Component/pages/Main';
 
 const PPOBScreen = () => (
   <View>
@@ -28,7 +29,7 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator
-        initialRouteName="KasBook"
+        initialRouteName="Home" // Set the default tab to Home
         screenOptions={{
           tabBarActiveTintColor: '#F86A6A',
           tabBarInactiveTintColor: '#aaa',
@@ -40,11 +41,11 @@ const App = () => {
           component={HomeScreen}
           options={{
             tabBarLabel: 'KasBook',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({color}) => (
               <Image
-                source={require('./assets/icon_book.png')}
-                style={{width: size, height: size, tintColor: color}}
-              />
+              source={require('./assets/icon_book.png')}
+              style={{tintColor: color}}
+            />
             ),
           }}
         />
@@ -53,10 +54,23 @@ const App = () => {
           component={PPOBScreen}
           options={{
             tabBarLabel: 'PPOB',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({color}) => (
               <Image
-                source={require('./assets/icon_credit_card.png')}
-                style={{width: size, height: size, tintColor: color}}
+                source={require('./assets/icon_transaction.png')}
+                style={{tintColor: color}}
+              />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Home" // This is the name of the Home tab
+          component={MainScreen} // HomeScreen should be here
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({color}) => (
+              <Image
+                source={require('./assets/icon_home.png')}
+                style={{tintColor: color}}
               />
             ),
           }}
@@ -66,23 +80,23 @@ const App = () => {
           component={MarketScreen}
           options={{
             tabBarLabel: 'Market',
-            tabBarIcon: ({color, size}) => (
+            tabBarIcon: ({color}) => (
               <Image
                 source={require('./assets/icon_cart.png')}
-                style={{width: size, height: size, tintColor: color}}
+                style={{tintColor: color}}
               />
             ),
           }}
         />
         <Tab.Screen
-          name="Settings"
+          name="User"
           component={SettingsScreen}
           options={{
-            tabBarLabel: 'Settings',
-            tabBarIcon: ({color, size}) => (
+            tabBarLabel: 'User',
+            tabBarIcon: ({color}) => (
               <Image
-                source={require('./assets/icon_cog.png')}
-                style={{width: size, height: size, tintColor: color}}
+                source={require('./assets/icon_user.png')}
+                style={{tintColor: color}}
               />
             ),
           }}

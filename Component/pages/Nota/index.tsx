@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Text} from 'react-native-paper';
-import { NotaData } from '../../dummy';
+import {NotaData} from '../../dummy';
 
 const NotaScreen: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState<string>('JAN');
@@ -18,8 +18,18 @@ const NotaScreen: React.FC = () => {
   const scrollRef = useRef<ScrollView>(null);
 
   const months = [
-    'JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN',
-    'JUL', 'AUG', 'SEP', 'OKT', 'NOV', 'DEC',
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MEI',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OKT',
+    'NOV',
+    'DEC',
   ];
 
   const filteredData = NotaData.filter(item => {
@@ -47,12 +57,12 @@ const NotaScreen: React.FC = () => {
     if (scrollRef.current) {
       const offset =
         direction === 'right' ? scrollPosition + 100 : scrollPosition - 100;
-      scrollRef.current.scrollTo({ x: offset, animated: true });
+      scrollRef.current.scrollTo({x: offset, animated: true});
       setScrollPosition(offset);
     }
   };
 
-  const renderTableRow = ({ item }: any) => (
+  const renderTableRow = ({item}: any) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.id}</Text>
       <Text style={styles.cell}>{item.date}</Text>
@@ -69,84 +79,128 @@ const NotaScreen: React.FC = () => {
 
   return (
     <View>
-        <View style={styles.monthSelector}>
-          <TouchableOpacity onPress={() => handleScroll('left')}>
-            <Image source={require('../../../assets/arrow-right.png')} style={styles.arrowIcon} />
-          </TouchableOpacity>
-          <ScrollView ref={scrollRef} horizontal contentContainerStyle={styles.monthScroll}>
-            {months.map((month) => (
-              <TouchableOpacity
-                key={month}
-                onPress={() => setSelectedMonth(month)}
-                style={[
-                  styles.monthButton,
-                  { backgroundColor: selectedMonth === month ? '#CD4F4F' : 'transparent' },
-                ]}>
-                <Text style={{ color: selectedMonth === month ? 'white' : '#681313', fontWeight: '700' }}>{month}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-          <TouchableOpacity onPress={() => handleScroll('right')}>
-            <Image source={require('../../../assets/arrow-left.png')} style={styles.arrowIcon} />
-          </TouchableOpacity>
-        </View>
+      <View style={styles.monthSelector}>
+        <TouchableOpacity onPress={() => handleScroll('left')}>
+          <Image
+            source={require('../../../assets/arrow-right.png')}
+            style={styles.arrowIcon}
+          />
+        </TouchableOpacity>
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          contentContainerStyle={styles.monthScroll}>
+          {months.map(month => (
+            <TouchableOpacity
+              key={month}
+              onPress={() => setSelectedMonth(month)}
+              style={[
+                styles.monthButton,
+                {
+                  backgroundColor:
+                    selectedMonth === month ? '#CD4F4F' : 'transparent',
+                },
+              ]}>
+              <Text
+                style={{
+                  color: selectedMonth === month ? 'white' : '#681313',
+                  fontWeight: '700',
+                }}>
+                {month}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+        <TouchableOpacity onPress={() => handleScroll('right')}>
+          <Image
+            source={require('../../../assets/arrow-left.png')}
+            style={styles.arrowIcon}
+          />
+        </TouchableOpacity>
+      </View>
 
-        {/* Table */}
-        <View style={styles.tableHeader}>
-          <Text style={styles.cellHeader}>ID</Text>
-          <Text style={styles.cellHeader}>Tanggal</Text>
-          <Text style={styles.cellHeader}>Omset</Text>
-          <Text style={styles.cellHeader}>Laba</Text>
-        </View>
-        <FlatList
-  data={paginatedData}
-  keyExtractor={(_, index) => index.toString()}
-  renderItem={renderTableRow}
-  contentContainerStyle={[styles.tableBody]}
-/>
-{/* Kontrol Pagination Langsung di Bawah Tabel */}
-<View style={styles.paginationContainer}>
-  <TouchableOpacity
-    onPress={() => handlePageChange('prev')}
-    disabled={currentPage === 1}
-    style={[
-      styles.paginationButton,
-      { backgroundColor: currentPage === 1 ? '#E5E5E5' : '#CD4F4F' },
-    ]}>
-    <Text style={[styles.paginationText, { color: currentPage === 1 ? '#A5A5A5' : '#FFFFFF' }]}>
-      Prev
-    </Text>
-  </TouchableOpacity>
-  <Text style={styles.paginationInfo}>
-    {currentPage} / {totalPages}
-  </Text>
-  <TouchableOpacity
-    onPress={() => handlePageChange('next')}
-    disabled={currentPage === totalPages}
-    style={[
-      styles.paginationButton,
-      { backgroundColor: currentPage === totalPages ? '#E5E5E5' : '#CD4F4F' },
-    ]}>
-    <Text style={[styles.paginationText, { color: currentPage === totalPages ? '#A5A5A5' : '#FFFFFF' }]}>
-      Next
-    </Text>
-  </TouchableOpacity>
-</View>
+      {/* Table */}
+      <View style={styles.tableHeader}>
+        <Text style={styles.cellHeader}>ID</Text>
+        <Text style={styles.cellHeader}>Tanggal</Text>
+        <Text style={styles.cellHeader}>Omset</Text>
+        <Text style={styles.cellHeader}>Laba</Text>
+      </View>
+      <FlatList
+        data={paginatedData}
+        keyExtractor={(_, index) => index.toString()}
+        renderItem={renderTableRow}
+        contentContainerStyle={[styles.tableBody]}
+      />
+      {/* Kontrol Pagination Langsung di Bawah Tabel */}
+      <View style={styles.paginationContainer}>
+        <TouchableOpacity
+          onPress={() => handlePageChange('prev')}
+          disabled={currentPage === 1}
+          style={[
+            styles.paginationButton,
+            {backgroundColor: currentPage === 1 ? '#E5E5E5' : '#CD4F4F'},
+          ]}>
+          <Text
+            style={[
+              styles.paginationText,
+              {color: currentPage === 1 ? '#A5A5A5' : '#FFFFFF'},
+            ]}>
+            Prev
+          </Text>
+        </TouchableOpacity>
+        <Text style={styles.paginationInfo}>
+          {currentPage} / {totalPages}
+        </Text>
+        <TouchableOpacity
+          onPress={() => handlePageChange('next')}
+          disabled={currentPage === totalPages}
+          style={[
+            styles.paginationButton,
+            {
+              backgroundColor:
+                currentPage === totalPages ? '#E5E5E5' : '#CD4F4F',
+            },
+          ]}>
+          <Text
+            style={[
+              styles.paginationText,
+              {color: currentPage === totalPages ? '#A5A5A5' : '#FFFFFF'},
+            ]}>
+            Next
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-
-        {/* Summary */}
-        <View style={styles.footer}>
-          <View style={[styles.summaryCard, { backgroundColor: '#FFF3D8', borderColor: '#B98960', borderWidth: 1 }]}>
-            <Text style={[styles.summaryText, { color: '#B98960' }]}>
-              Omset Rp{totalOmset.toLocaleString('id-ID')}
-            </Text>
-          </View>
-          <View style={[styles.summaryCard, { backgroundColor: '#E7FFD8', borderColor: '#58B647', borderWidth: 1 }]}>
-            <Text style={[styles.summaryText, { color: '#58B647' }]}>
-              Laba Rp{totalLaba.toLocaleString('id-ID')}
-            </Text>
-          </View>
+      {/* Summary */}
+      <View style={styles.footer}>
+        <View
+          style={[
+            styles.summaryCard,
+            {
+              backgroundColor: '#FFF3D8',
+              borderColor: '#B98960',
+              borderWidth: 1,
+            },
+          ]}>
+          <Text style={[styles.summaryText, {color: '#B98960'}]}>
+            Omset Rp{totalOmset.toLocaleString('id-ID')}
+          </Text>
         </View>
+        <View
+          style={[
+            styles.summaryCard,
+            {
+              backgroundColor: '#E7FFD8',
+              borderColor: '#58B647',
+              borderWidth: 1,
+            },
+          ]}>
+          <Text style={[styles.summaryText, {color: '#58B647'}]}>
+            Laba Rp{totalLaba.toLocaleString('id-ID')}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -186,7 +240,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
-  },  
+  },
   headerTitle: {
     margin: 20,
     marginTop: 20,
@@ -210,7 +264,7 @@ const styles = StyleSheet.create({
   monthSelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 8,
     backgroundColor: '#F8BBD0',
     paddingHorizontal: 16,
   },
