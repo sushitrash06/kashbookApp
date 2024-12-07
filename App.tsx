@@ -4,6 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import HomeScreen from './Component/pages/Home';
 import MainScreen from './Component/pages/Main';
+import MarketScreen from './Component/pages/Market';
 
 const PPOBScreen = () => (
   <View>
@@ -11,11 +12,6 @@ const PPOBScreen = () => (
   </View>
 );
 
-const MarketScreen = () => (
-  <View>
-    <Text>Market Screen</Text>
-  </View>
-);
 
 const SettingsScreen = () => (
   <View>

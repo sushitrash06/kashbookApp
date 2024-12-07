@@ -164,33 +164,33 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     marginHorizontal: 16,
-    backgroundColor: '#FFFFFF', // Warna latar belakang putih
+    backgroundColor: '#FFFFFF', 
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 5, // Tambahkan jarak antar baris
+    marginVertical: 5, 
   },
   rowHighlighted: {
-    backgroundColor: '#F4F4F4', // Warna berbeda untuk highlight
+    backgroundColor: '#F4F4F4', 
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
-    marginVertical: 5, // Konsistensi margin antar elemen
-    borderRadius: 5, // Biar sudut lebih halus
+    marginVertical: 5, 
+    borderRadius: 5, 
   },
   rowTitle: {
-    fontWeight: '600', // Tebal sedang
+    fontWeight: '600', 
     fontSize: 14,
-    color: '#333', // Warna teks lebih gelap untuk kontras
+    color: '#333',
   },
   rowValue: {
     fontWeight: '700',
     fontSize: 14,
-    color: '#000', // Warna lebih kuat untuk nilai
-    textAlign: 'right', // Pastikan nilai rata kanan
+    color: '#000',
+    textAlign: 'right', 
   },
   
 });
