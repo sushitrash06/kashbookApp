@@ -1,5 +1,5 @@
-import React from 'react';
-import { FlatList, Text, View, Image, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, Text, View, Image, StyleSheet, TextInput } from 'react-native';
 
 interface Bag {
   kode: string;
@@ -14,17 +14,34 @@ const dummyData: Bag[] = Array.from({ length: 40 }, (_, index) => ({
   nama: `Bag Exclusive ${index + 1}`,
   kategori: 'Fashion',
   harga: 'Rp 500,000',
-  imageUrl: 'https://via.placeholder.com/150', // Placeholder image URL
+  imageUrl: 'https://picsum.photos/200', // Placeholder image URL
 }));
 
-const App: React.FC = () => {
+const MarketScreen: React.FC = () => {
+  const [searchText, setSearchText] = useState('');
+  const [filteredData, setFilteredData] = useState(dummyData);
+
+  const handleSearch = (text: string) => {
+    setSearchText(text);
+    const filtered = dummyData.filter(item => 
+      item.nama.toLowerCase().includes(text.toLowerCase()) ||
+      item.kategori.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
   return (
     <View style={styles.container}>
        <Text style={styles.headerTitle}>Market</Text>
        <View style={styles.subContainer}>
+       <TextInput
+        style={styles.searchInput}
+        placeholder="Cari Produk"
+        value={searchText}
+        onChangeText={handleSearch}
+      />
        <FlatList
-      data={dummyData}
-      style={{marginTop: 70}}
+      data={filteredData}
+      style={{marginTop: 20}}
       numColumns={2} // Sets the number of columns for the grid
       keyExtractor={(item) => item.kode}
       renderItem={({ item }) => (
@@ -74,6 +91,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 5, // Add horizontal margin for spacing between columns
   },
+  searchInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    marginBottom: 15,
+    fontSize: 16,
+    marginTop: 50,
+    marginHorizontal: 20
+  },
   image: {
     width: 100,
     height: 100,
@@ -98,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default MarketScreen;
