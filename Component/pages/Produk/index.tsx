@@ -7,38 +7,37 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  Alert,
+  ScrollView,
 } from 'react-native';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 type Product = {
-    id: number;
-    name: string;
-    category: string;
-    price: number;
-    image: string;
-    cost: number; // Make sure cost is a number here
-  };
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  image: string;
+  cost: number;
+};
 
-  const initialProducts: Product[] = Array.from({ length: 10 }, (_, index) => ({
-    id: index + 1,
-    name: `Produk ${index + 1}`,
-    category: ['elektronik', 'pakaian', 'makanan', 'lainnya'][index % 4],
-    price: Math.floor(Math.random() * 90000 + 10000),
-    image: `https://via.placeholder.com/150?text=Produk+${index + 1}`,
-    cost: Math.floor(Math.random() * 50000 + 5000), // Default cost value
-  }));
-  
+const initialProducts: Product[] = Array.from({ length: 10 }, (_, index) => ({
+  id: index + 1,
+  name: `Produk ${index + 1}`,
+  category: ['elektronik', 'pakaian', 'makanan', 'lainnya'][index % 4],
+  price: Math.floor(Math.random() * 90000 + 10000),
+  image: `https://via.placeholder.com/150?text=Produk+${index + 1}`,
+  cost: Math.floor(Math.random() * 50000 + 5000),
+}));
 
 export const ProductGrid = () => {
-  const bottomSheetRef = useRef<BottomSheet>(null); // Ref untuk Bottom Sheet
-  const snapPoints = useMemo(() => ['50%', '90%'], []); // Titik snapping Bottom Sheet
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const snapPoints = useMemo(() => ['0%', '50%', '75%'], []);
 
-  // State untuk produk, filter, dan pencarian
   const [products, setProducts] = useState(initialProducts);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // Form produk baru
   const [newProduct, setNewProduct] = useState({
     code: '',
     name: '',
@@ -48,67 +47,70 @@ export const ProductGrid = () => {
     price: '',
   });
 
-  // Filter produk berdasarkan kategori dan pencarian
+  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
+
   const filteredProducts = products.filter(
     (product) =>
       (!selectedCategory || product.category === selectedCategory) &&
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Tambahkan produk baru
   const handleAddProduct = () => {
-    if (
-      newProduct.code &&
-      newProduct.name &&
-      newProduct.unit &&
-      newProduct.price
-    ) {
-      setProducts([
-        ...products,
-        {
-          ...newProduct,
-          id: products.length + 1,
-          price: parseFloat(newProduct.price),  // Ensure price is a number
-          cost: parseFloat(newProduct.cost),    // Ensure cost is a number
-          image: `https://via.placeholder.com/150?text=Produk+${products.length + 1}`,
-        },
-      ]);
-      setNewProduct({
-        code: '',
-        name: '',
-        category: 'elektronik',
-        unit: '',
-        cost: '',
-        price: '',
-      });
-      bottomSheetRef.current?.close(); // Close Bottom Sheet
-    } else {
-      console.log('Mohon lengkapi semua field!');
-    }
-  };
-  
+    const newErrors: { [key: string]: boolean } = {};
+    if (!newProduct.code) newErrors.code = true;
+    if (!newProduct.name) newErrors.name = true;
+    if (!newProduct.unit) newErrors.unit = true;
+    if (!newProduct.price || isNaN(parseFloat(newProduct.price))) newErrors.price = true;
+    if (!newProduct.cost || isNaN(parseFloat(newProduct.cost))) newErrors.cost = true;
 
-  // Hapus produk
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      Alert.alert('Error', 'Mohon lengkapi semua field dengan benar!');
+      return;
+    }
+
+    setProducts([
+      ...products,
+      {
+        ...newProduct,
+        id: products.length + 1,
+        price: parseFloat(newProduct.price),
+        cost: parseFloat(newProduct.cost),
+        image: `https://via.placeholder.com/150?text=Produk+${products.length + 1}`,
+      },
+    ]);
+
+    setNewProduct({
+      code: '',
+      name: '',
+      category: 'elektronik',
+      unit: '',
+      cost: '',
+      price: '',
+    });
+
+    bottomSheetRef.current?.close();
+  };
+
   const handleDeleteProduct = (id: number) => {
     setProducts(products.filter((product) => product.id !== id));
   };
 
-  // Edit produk
   const handleEditProduct = (product: Product) => {
     setNewProduct({
       code: product.id.toString(),
       name: product.name,
       category: product.category,
       unit: '',
-      cost: product.cost?.toString() || '',
+      cost: product.cost.toString(),
       price: product.price.toString(),
     });
-    bottomSheetRef.current?.expand(); // Open Bottom Sheet
+    bottomSheetRef.current?.expand();
   };
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
         placeholder="Cari Produk..."
@@ -116,7 +118,6 @@ export const ProductGrid = () => {
         onChangeText={setSearchQuery}
       />
 
-      {/* Filter Kategori */}
       <View style={styles.filterContainer}>
         {['elektronik', 'pakaian', 'makanan', 'lainnya'].map((category) => (
           <TouchableOpacity
@@ -126,9 +127,7 @@ export const ProductGrid = () => {
               selectedCategory === category && styles.filterButtonActive,
             ]}
             onPress={() =>
-              setSelectedCategory(
-                selectedCategory === category ? null : category
-              )
+              setSelectedCategory(selectedCategory === category ? null : category)
             }>
             <Text
               style={[
@@ -141,7 +140,6 @@ export const ProductGrid = () => {
         ))}
       </View>
 
-      {/* Grid Produk */}
       <FlatList
         data={filteredProducts}
         keyExtractor={(item) => item.id.toString()}
@@ -156,7 +154,6 @@ export const ProductGrid = () => {
             <Text style={styles.productName}>{item.name}</Text>
             <Text style={styles.productPrice}>Rp{item.price}</Text>
 
-            {/* Edit and Delete Buttons */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.editButton}
@@ -174,68 +171,33 @@ export const ProductGrid = () => {
         contentContainerStyle={styles.gridContainer}
       />
 
-      {/* Bottom Sheet */}
       <BottomSheet ref={bottomSheetRef} index={-1} snapPoints={snapPoints}>
-        <View style={styles.bottomSheetContent}>
+        <ScrollView contentContainerStyle={styles.bottomSheetContent}>
           <Text style={styles.bottomSheetTitle}>Tambah/Edit Produk</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Kode Produk"
-            value={newProduct.code}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, code: text }))
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Nama Produk"
-            value={newProduct.name}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, name: text }))
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Kategori (elektronik, pakaian, makanan, lainnya)"
-            value={newProduct.category}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, category: text }))
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Satuan"
-            value={newProduct.unit}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, unit: text }))
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Modal"
-            keyboardType="numeric"
-            value={newProduct.cost}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, cost: text }))
-            }
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Harga Jual"
-            keyboardType="numeric"
-            value={newProduct.price}
-            onChangeText={(text) =>
-              setNewProduct((prev) => ({ ...prev, price: text }))
-            }
-          />
+          {['code', 'name', 'category', 'unit', 'cost', 'price'].map((field) => (
+            <TextInput
+              key={field}
+              style={[
+                styles.input,
+                errors[field] && { borderColor: 'red', borderWidth: 1 },
+              ]}
+              placeholder={field === 'price' || field === 'cost' ? `${field} (contoh: 10000)` : field}
+              keyboardType={field === 'price' || field === 'cost' ? 'numeric' : 'default'}
+              value={(newProduct as any)[field]}
+              onChangeText={(text) => {
+                setErrors((prev) => ({ ...prev, [field]: false }));
+                setNewProduct((prev) => ({ ...prev, [field]: text }));
+              }}
+            />
+          ))}
+
           <TouchableOpacity style={styles.addButton} onPress={handleAddProduct}>
             <Text style={styles.addButtonText}>Tambah Produk</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       </BottomSheet>
 
-      {/* Tombol Tambah */}
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => bottomSheetRef.current?.expand()}>

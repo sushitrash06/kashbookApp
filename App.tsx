@@ -20,106 +20,102 @@ const SettingsScreen = () => (
   </View>
 );
 
-const NewScreen = () => (
-  <View>
-    <Text>New Screen (Not in bottom tab)</Text>
-  </View>
-);
-
-// Create a stack navigator for the new route
+const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Create a Stack Navigator to add a new screen without bottom tab
-const NewScreenStack = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="transaction" component={TransactionScreen} />
-    </Stack.Navigator>
-  );
-};
-
-const Tab = createBottomTabNavigator();
+const TabNavigator = () => (
+  <Tab.Navigator
+    initialRouteName="Home"
+    screenOptions={{
+      tabBarActiveTintColor: '#F86A6A',
+      tabBarInactiveTintColor: '#aaa',
+      tabBarStyle: { backgroundColor: '#fff' },
+      headerShown: false,
+    }}
+  >
+    <Tab.Screen
+      name="KasBook"
+      component={HomeScreen}
+      options={{
+        tabBarLabel: 'KasBook',
+        tabBarIcon: ({ color }) => (
+          <Image
+            source={require('./assets/icon_book.png')}
+            style={{ tintColor: color }}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="PPOB"
+      component={PPOBScreen}
+      options={{
+        tabBarLabel: 'PPOB',
+        tabBarIcon: ({ color }) => (
+          <Image
+            source={require('./assets/icon_transaction.png')}
+            style={{ tintColor: color }}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Home"
+      component={MainScreen}
+      options={{
+        tabBarLabel: 'Home',
+        tabBarIcon: ({ color }) => (
+          <Image
+            source={require('./assets/icon_home.png')}
+            style={{ tintColor: color }}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Market"
+      component={MarketScreen}
+      options={{
+        tabBarLabel: 'Market',
+        tabBarIcon: ({ color }) => (
+          <Image
+            source={require('./assets/icon_cart.png')}
+            style={{ tintColor: color }}
+          />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="User"
+      component={SettingsScreen}
+      options={{
+        tabBarLabel: 'User',
+        tabBarIcon: ({ color }) => (
+          <Image
+            source={require('./assets/icon_user.png')}
+            style={{ tintColor: color }}
+          />
+        ),
+      }}
+    />
+  </Tab.Navigator>
+);
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          tabBarActiveTintColor: '#F86A6A',
-          tabBarInactiveTintColor: '#aaa',
-          tabBarStyle: { backgroundColor: '#fff' },
-          headerShown: false,
-        }}>
-        <Tab.Screen
-          name="KasBook"
-          component={HomeScreen}
-          options={{
-            tabBarLabel: 'KasBook',
-            tabBarIcon: ({ color }) => (
-              <Image
-                source={require('./assets/icon_book.png')}
-                style={{ tintColor: color }}
-              />
-            ),
-          }}
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Tabs"
+          component={TabNavigator}
+          options={{ headerShown: false }}
         />
-        <Tab.Screen
-          name="PPOB"
-          component={PPOBScreen}
-          options={{
-            tabBarLabel: 'PPOB',
-            tabBarIcon: ({ color }) => (
-              <Image
-                source={require('./assets/icon_transaction.png')}
-                style={{ tintColor: color }}
-              />
-            ),
-          }}
+        <Stack.Screen
+          name="Transaction"
+          component={TransactionScreen}
+          options={{ headerTitle: 'Transaction' }}
         />
-        <Tab.Screen
-          name="Home"
-          component={MainScreen}
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color }) => (
-              <Image
-                source={require('./assets/icon_home.png')}
-                style={{ tintColor: color }}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Market"
-          component={MarketScreen}
-          options={{
-            tabBarLabel: 'Market',
-            tabBarIcon: ({ color }) => (
-              <Image
-                source={require('./assets/icon_cart.png')}
-                style={{ tintColor: color }}
-              />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="User"
-          component={SettingsScreen}
-          options={{
-            tabBarLabel: 'User',
-            tabBarIcon: ({ color }) => (
-              <Image
-                source={require('./assets/icon_user.png')}
-                style={{ tintColor: color }}
-              />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-
-      {/* Add a route outside of bottom tabs */}
-      <NewScreenStack />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };

@@ -2,7 +2,6 @@ import React from 'react';
 import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Share from 'react-native-share';
-import RNPrint from 'react-native-print';
 
 interface Item {
   id: string;
@@ -34,13 +33,13 @@ const SalesScreen = () => {
     }
   };
 
-  const handlePrint = async () => {
-    try {
-      await RNPrint.print({ filePath: 'path/to/document.pdf' });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const handlePrint = async () => {
+  //   try {
+  //     await RNPrint.print({ filePath: 'path/to/document.pdf' });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   const renderItem = ({item}: {item: Item}) => (
     <View style={styles.itemContainer}>
@@ -71,7 +70,7 @@ const SalesScreen = () => {
           <TouchableOpacity onPress={handleShare}>
             <Icon name="share-social" size={24} color="#fff" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handlePrint} style={{marginLeft: 16}}>
+          <TouchableOpacity style={{marginLeft: 16}}>
             <Icon name="print" size={24} color="#fff" />
           </TouchableOpacity>
         </View>

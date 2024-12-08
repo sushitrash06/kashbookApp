@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TextInput, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRef } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 
 interface Item {
@@ -22,14 +21,28 @@ const PenjualanScreen: React.FC = () => {
 
   // Handle adding new item to the list
   const addItem = () => {
+    if (!namaBarang || !hargaSatuan || !jumlah) {
+      console.log('Mohon lengkapi semua data!');
+      return;
+    }
+
     const item: Item = {
       namaBarang,
       hargaSatuan: parseInt(hargaSatuan, 10),
       jumlah: parseInt(jumlah, 10),
       totalHarga: parseInt(hargaSatuan, 10) * parseInt(jumlah, 10),
     };
+
     setItems([...items, item]);
     bottomSheetRef.current?.close(); // Close bottom sheet after adding item
+    clearForm(); // Clear form after adding item
+  };
+
+  // Clear form after adding item
+  const clearForm = () => {
+    setNamaBarang('');
+    setHargaSatuan('');
+    setJumlah('');
   };
 
   // Calculate the total price of all items

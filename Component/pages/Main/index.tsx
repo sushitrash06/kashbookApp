@@ -1,18 +1,21 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView} from 'react-native';
-import {Text} from 'react-native-paper';
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { Text } from 'react-native-paper';
 import ProfitLossChart from '../../section/chart';
-import {Image} from 'react-native';
+import { Image } from 'react-native';
 import dayjs from 'dayjs';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const MainScreen: React.FC = () => {
+const MainScreen = ({ navigation }: { navigation: any }) => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [openDatePicker, setOpenDatePicker] = useState<boolean>(false);
 
   const handleDateButtonPress = () => {
-    console.log('Button pressed, opening date picker');
     setOpenDatePicker(true);
+  };
+
+  const handleNavigateToTransaction = () => {
+    navigation.navigate('Transaction'); // Pastikan "Transaction" sesuai dengan nama yang Anda definisikan dalam navigator
   };
 
   return (
@@ -21,13 +24,13 @@ const MainScreen: React.FC = () => {
       <View style={styles.subContainer}>
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <ProfitLossChart />
-          <TouchableOpacity style={styles.menu}>
+          <TouchableOpacity style={styles.menu} onPress={handleNavigateToTransaction}>
             <Image
-              style={{marginTop: 5}}
+              style={{ marginTop: 5 }}
               source={require('../../../assets/icon_transaction.png')}
             />
             <Text
-              style={{marginHorizontal: 10, fontWeight: '900', color: '#681313'}}>
+              style={{ marginHorizontal: 10, fontWeight: '900', color: '#681313' }}>
               History Transaksi
             </Text>
           </TouchableOpacity>
@@ -59,7 +62,7 @@ const MainScreen: React.FC = () => {
                   }
                   setOpenDatePicker(false);
                 }}
-                style={{marginBottom: 10, zIndex: 10}}
+                style={{ marginBottom: 10, zIndex: 10 }}
               />
             )}
           </View>
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flexGrow: 1,
-    paddingBottom: 20, // Space at bottom
+    paddingBottom: 20,
   },
   dateButton: {
     marginHorizontal: 16,
@@ -164,25 +167,25 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 10,
     marginHorizontal: 16,
-    backgroundColor: '#FFFFFF', 
+    backgroundColor: '#FFFFFF',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginVertical: 5, 
+    marginVertical: 5,
   },
   rowHighlighted: {
-    backgroundColor: '#F4F4F4', 
+    backgroundColor: '#F4F4F4',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 8,
-    marginVertical: 5, 
-    borderRadius: 5, 
+    marginVertical: 5,
+    borderRadius: 5,
   },
   rowTitle: {
-    fontWeight: '600', 
+    fontWeight: '600',
     fontSize: 14,
     color: '#333',
   },
@@ -190,9 +193,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 14,
     color: '#000',
-    textAlign: 'right', 
+    textAlign: 'right',
   },
-  
 });
 
 export default MainScreen;
